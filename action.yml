@@ -1,0 +1,8 @@
+name: 'PHP Insights App'
+description: 'PHP Insights App integration with GitHub actions'
+branding:
+  icon: 'check-square'
+  color: 'green'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
