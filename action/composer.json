@@ -1,0 +1,28 @@
+{
+    "name": "worksome/phpinsights_app",
+    "description": "PHP Insights App",
+    "type": "project",
+    "minimum-stability": "dev",
+    "require": {
+        "nunomaduro/phpinsights": "dev-master",
+        "guzzlehttp/guzzle": "^6.5",
+        "symfony/var-dumper": "^5.0",
+        "ext-json": "*",
+        "knplabs/github-api": "^2.13@dev",
+        "php-http/guzzle6-adapter": "^1.1"
+    },
+    "authors": [
+        {
+            "name": "Oliver Nybroe",
+            "email": "oliver@worksome.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Worksome\\PhpInsightsApp\\": "src"
+        }
+    },
+    "bin": ["bin/phpinsights-app.php"],
+    "require-dev": {
+    }
+}

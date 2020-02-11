@@ -1,16 +1,14 @@
-on: [push]
+on: [pull_request]
 
 jobs:
-  hello_world_job:
+  static_analysis:
     runs-on: ubuntu-latest
-    name: A job to say hello
+    name: Static analysis
     steps:
       # To use this repository's private action, you must check out the repository
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Hello world action step
+      - name: PHP Insights App
         uses: ./ # Uses an action in the root directory
-        id: hello
-      # Use the output from the `hello` step
-      - name: Get the output time
-        run: echo "The time was ${{ steps.hello.outputs.time }}"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
