@@ -75,7 +75,7 @@ async function getBadge(request, {username, repository, branch}, type) {
         label: `PHPInsights | Unknown`,
         message: `??`
       }), {
-        status: 404,
+        status: 200,
       }
     )
   }
@@ -94,7 +94,7 @@ async function getBadge(request, {username, repository, branch}, type) {
         label: `PHPInsights | ${type[0].toUpperCase() + type.slice(1)}`,
         message: `??`
       }), {
-        status: 404,
+        status: 200,
       }
     )
   }
