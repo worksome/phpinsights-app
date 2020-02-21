@@ -4,6 +4,7 @@
 namespace Worksome\PhpInsightsApp;
 
 
+use Github\Client;
 use stdClass;
 
 class GitHubContext
@@ -12,6 +13,8 @@ class GitHubContext
     public const GITHUB_SHA = 'GITHUB_SHA';
 
     public stdClass $context;
+
+    private static ?Client $client = null;
 
     /**
      * Context constructor.
@@ -72,6 +75,21 @@ class GitHubContext
         return getenv('GITHUB_WORKSPACE');
     }
 
+    public static function getReference(): string
+    {
+        return getenv('GITHUB_REF');
+    }
+
+    public static function getHeadReference(): ?string
+    {
+        return getenv('GITHUB_HEAD_REF');
+    }
+
+    public static function getBaseReference(): ?string
+    {
+        return getenv('GITHUB_BASE_REF');
+    }
+
     public static function getInput(string $name, $default = null)
     {
         $value = getenv('INPUT_'. mb_strtoupper(str_replace(' ', '_', $name)));
@@ -86,5 +104,21 @@ class GitHubContext
     public static function getCommitSHA(): string
     {
         return getenv(self::GITHUB_SHA);
+    }
+
+    public static function getGitHubToken(string $name = 'repo token'): string
+    {
+        return self::getInput($name);
+    }
+
+    public static function getGitHubClient(string $name = 'repo token'): Client
+    {
+        if (self::$client !== null) {
+            return self::$client;
+        }
+
+        self::$client = new Client();
+        self::$client->authenticate(self::getGitHubToken($name), null, Client::AUTH_HTTP_TOKEN);
+        return self::$client;
     }
 }

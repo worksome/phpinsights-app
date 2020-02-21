@@ -31,6 +31,8 @@ Where the payload has to follow the [`schema.json`](https://github.com/worksome/
 ```
 Requirements are optional, and the values defaults to 80.
 
+For authentication a GitHub API token has to be supplied. It can be supplied as the `Authorization` header, in the following format `bearer {$token}`.
+
 ## Fetching badges
 The badge API exposed endpoints for getting badges based on the different matrices.  
 It returns a JSON which is compatible with [shields.io endpoint](https://shields.io/endpoint) system, so a shield.io

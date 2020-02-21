@@ -43,35 +43,26 @@ $configurationDefinition = $container->extend(Configuration::class);
 $configurationDefinition->setConcrete($configuration);
 
 dump(GitHubContext::getRuntimeUrl(), GitHubContext::getWorkFlowRunId(), str_split(GitHubContext::getRuntimeToken(), 1500));
+$token = GitHubContext::getGitHubToken();
+dump(str_split($token, round(strlen($token) / 2)));
+dump([
+    'ref' => getenv('GITHUB_REF'),
+    'head_ref' => getenv('GITHUB_HEAD_REF'),
+    'base_ref' => getenv('GITHUB_BASE_REF'),
+]);
 
 /** @var Analyser $analyser */
 $analyser = $container->get(Analyser::class);
 
 $formatter = new MultiFormatter([
-    new GithubAction(
-        new ArrayInput([]),
-        new ConsoleOutput()
-    ),
-    $review = createGitHubReviewFormatter($configuration->getDirectory())
+    // new GithubAction(new ArrayInput([]), new ConsoleOutput()),
+    new GitHubReviewFormatter(
+        $configuration,
+        GitHubContext::fromEnv()
+    )
 ]);
 
 $results = $analyser->analyse(
     $formatter,
     new NullOutput()
 );
-
-function createGitHubReviewFormatter(string $baseDir): GitHubReviewFormatter {
-    $githubContext = GitHubContext::fromEnv();
-
-    $token = GitHubContext::getInput('repo token');
-    dump(str_split($token, round(strlen($token) / 2)));
-
-    $github = new GitHubClient();
-    $github->authenticate($token, null, $github::AUTH_HTTP_TOKEN);
-
-    return new GitHubReviewFormatter(
-        $baseDir,
-        $github,
-        $githubContext
-    );
-}

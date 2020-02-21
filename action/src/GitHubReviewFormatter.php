@@ -17,6 +17,10 @@ use NunoMaduro\PhpInsights\Domain\Insights\InsightCollection;
 use NunoMaduro\PhpInsights\Domain\Results;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Worksome\PhpInsightsApp\Actions\Action;
+use Worksome\PhpInsightsApp\Actions\CreateReviewAction;
+use Worksome\PhpInsightsApp\Actions\UpdateBadgesAction;
+use Worksome\PhpInsightsApp\Badges\Client as BadgesClient;
 
 class GitHubReviewFormatter implements Formatter
 {
@@ -24,15 +28,15 @@ class GitHubReviewFormatter implements Formatter
 
     public array $comments;
 
-    public Client $github;
+    private GitHubContext $githubContext;
 
-    public GitHubContext $githubContext;
+    private Configuration $configuration;
 
-    public function __construct(string $baseDir, Client $github, GitHubContext $gitHubContext)
+    public function __construct(Configuration $configuration, GitHubContext $gitHubContext)
     {
-        $this->baseDir = $baseDir;
-        $this->github = $github;
+        $this->configuration = $configuration;
         $this->githubContext = $gitHubContext;
+        $this->baseDir = $configuration->getDirectory();
     }
 
     /**
@@ -47,7 +51,12 @@ class GitHubReviewFormatter implements Formatter
 
         $reviewStatus = $this->getReviewStatus($result, $comments);
 
-        $this->github->pullRequest()->reviews()->create(
+        collect([
+            new CreateReviewAction($this->githubContext::getGitHubClient()),
+            new UpdateBadgesAction(new BadgesClient($this->githubContext::getGitHubToken()), $this->githubContext, $this->configuration),
+        ])->each(fn(Action $action) => $action->handle($insightCollection));
+
+        $this->githubContext::getGitHubClient()->pullRequest()->reviews()->create(
             $this->githubContext->getRepositoryOwnerLogin(),
             $this->githubContext->getRepositoryName(),
             $this->githubContext->getPullRequestNumber(),

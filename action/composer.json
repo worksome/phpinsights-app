@@ -9,7 +9,8 @@
         "symfony/var-dumper": "^5.0",
         "ext-json": "*",
         "knplabs/github-api": "^2.13@dev",
-        "php-http/guzzle6-adapter": "^1.1"
+        "php-http/guzzle6-adapter": "^1.1",
+        "illuminate/support": "^8.0@dev"
     },
     "authors": [
         {
