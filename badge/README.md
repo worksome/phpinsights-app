@@ -48,7 +48,7 @@ https://img.shields.io/endpoint?url=https://badges.phpinsights.app/worksome/phpi
 Which returns a badge:  
 ![badge](https://img.shields.io/endpoint?url=https://badges.phpinsights.app/worksome/phpinsights-app/master/code)
 
-The badge can be changed to your liking, for example the style can be changed by appending `&tyle={type}`, where the
+The badge can be changed to your liking, for example the style can be changed by appending `&style={type}`, where the
 following types are available:  
 | type          | badge |
 |---------------|-----------|
