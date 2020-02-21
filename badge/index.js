@@ -84,7 +84,7 @@ async function getBadge(request, {username, repository, branch}, type) {
 
   const minRequirement = data && (data.hasOwnProperty('requirements') && data.requirements.hasOwnProperty(`min-${type}`))
     ? data.requirements[`min-${type}`] : null;
-  const percentage = data ? data['summary'][type] : null;
+  const percentage = data && data.hasOwnProperty('summary') ? data['summary'][type] : null;
 
   // Handle if no percentage is saved.
   if (!percentage) {
