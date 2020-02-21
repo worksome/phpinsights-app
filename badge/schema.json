@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "readOnly": true,
+  "title": "The JSON format for updating badges.",
+  "required": [
+    "summary",
+    "requirements"
+  ],
+  "definitions": {
+    "percentage": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    }
+  },
+  "properties": {
+    "summary": {
+      "$id": "#/properties/summary",
+      "type": "object",
+      "title": "The Summary Schema",
+      "properties": {
+        "code": {
+          "$ref": "#/definitions/percentage"
+        },
+        "complexity": {
+          "$ref": "#/definitions/percentage"
+        },
+        "architecture": {
+          "$ref": "#/definitions/percentage"
+        },
+        "style": {
+          "$ref": "#/definitions/percentage"
+        }
+      }
+    },
+    "requirements": {
+      "$id": "#/properties/settings",
+      "type": "object",
+      "title": "The Settings Schema",
+      "properties": {
+        "min-code": {
+          "$ref": "#/definitions/percentage",
+          "default": 80
+        },
+        "min-complexity": {
+          "$ref": "#/definitions/percentage",
+          "default": 80
+        },
+        "min-architecture": {
+          "$ref": "#/definitions/percentage",
+          "default": 80
+        },
+        "min-style": {
+          "$ref": "#/definitions/percentage",
+          "default": 80
+        }
+      }
+    }
+  }
+}

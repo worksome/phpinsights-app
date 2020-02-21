@@ -1,0 +1,23 @@
+{
+  "private": true,
+  "name": "badge",
+  "version": "1.0.0",
+  "description": "A template for kick starting a Cloudflare Workers project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier --write '**/*.{js,css,json,md}'"
+  },
+  "author": "Oliver Nybroe <olivernybroe@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.8.4",
+    "@babel/preset-env": "^7.8.4",
+    "@cloudflare/workers-types": "^1.0.6",
+    "babel-loader": "^8.0.6",
+    "prettier": "^1.18.2"
+  },
+  "dependencies": {
+    "url-parse": "^1.4.7"
+  }
+}

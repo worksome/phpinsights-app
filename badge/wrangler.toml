@@ -1,0 +1,14 @@
+name = "badge"
+type = "webpack"
+account_id = "2a9b0b317242a1e5924ce81d5df4376b"
+workers_dev = true
+kv-namespaces = [
+         { binding = "badges", id = "f933fafe31c74913be91021008e70c04" }
+]
+
+[env.production]
+route = "badges.phpinsights.app/*"
+zone_id = "30904a899eaee82d6ebf32afe2c20d6a"
+kv-namespaces = [
+         { binding = "badges", id = "f933fafe31c74913be91021008e70c04" }
+]

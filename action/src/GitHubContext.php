@@ -52,6 +52,26 @@ class GitHubContext
         return $this->context->pull_request->number;
     }
 
+    public static function getRuntimeUrl(): string
+    {
+        return getenv('ACTIONS_RUNTIME_URL');
+    }
+
+    public static function getRuntimeToken(): string
+    {
+        return getenv('ACTIONS_RUNTIME_TOKEN');
+    }
+
+    public static function getWorkFlowRunId(): string
+    {
+        return getenv('GITHUB_RUN_ID');
+    }
+
+    public static function getWorkSpaceDirectory(): string
+    {
+        return getenv('GITHUB_WORKSPACE');
+    }
+
     public static function getInput(string $name, $default = null)
     {
         $value = getenv('INPUT_'. mb_strtoupper(str_replace(' ', '_', $name)));
