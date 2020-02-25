@@ -7,6 +7,7 @@ namespace Worksome\PhpInsightsApp\Actions;
 use NunoMaduro\PhpInsights\Domain\Configuration;
 use NunoMaduro\PhpInsights\Domain\Insights\InsightCollection;
 use Worksome\PhpInsightsApp\Badges\Client;
+use Worksome\PhpInsightsApp\Badges\Client as BadgesClient;
 use Worksome\PhpInsightsApp\GitHubContext;
 
 class UpdateBadgesAction implements Action
@@ -19,13 +20,13 @@ class UpdateBadgesAction implements Action
 
     /**
      * UpdateBadgesAction constructor.
-     * @param Client $client
+     *
      * @param GitHubContext $context
      * @param Configuration $configuration
      */
-    public function __construct(Client $client, GitHubContext $context, Configuration $configuration)
+    public function __construct( GitHubContext $context, Configuration $configuration)
     {
-        $this->client = $client;
+        $this->client = new BadgesClient($context::getGitHubToken());
         $this->context = $context;
         $this->configuration = $configuration;
     }

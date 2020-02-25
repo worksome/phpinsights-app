@@ -50,6 +50,11 @@ class GitHubContext
         return $this->context->repository->name;
     }
 
+    public function inPullRequest(): bool
+    {
+        return isset($this->context->pull_request);
+    }
+
     public function getPullRequestNumber(): int
     {
         return $this->context->pull_request->number;

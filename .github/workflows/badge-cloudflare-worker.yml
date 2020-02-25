@@ -1,9 +1,11 @@
-name: Deploy
+name: Deploy Badge CloudFlare Worker
 
 on:
   push:
     branches:
       - master
+    paths:
+      - 'badge/*'
 
 jobs:
   deploy:
