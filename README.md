@@ -1,21 +1,12 @@
-# Hello world javascript action
+# PHP Insights App
+![PHP Insights - Code](https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fbadges.phpinsights.app%2Fworksome%2Fphpinsights-app%2Fmaster%2Fcode)
+![PHP Insights - Complexity](https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fbadges.phpinsights.app%2Fworksome%2Fphpinsights-app%2Fmaster%2Fcomplexity)
+![PHP Insights - Architecture](https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fbadges.phpinsights.app%2Fworksome%2Fphpinsights-app%2Fmaster%2Farchitecture)
+![PHP Insights - Style](https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fbadges.phpinsights.app%2Fworksome%2Fphpinsights-app%2Fmaster%2Fstyle)
 
-This action prints "Hello World" or "Hello" + the name of a person to greet to the log.
+Running PHP Insights in the best way possible!  
 
-## Inputs
+This tool will run PHP Insights for you and provide you with GitHub reviews, badges and more!  
+To use it add the example workflow file to your GitHub repository, and the GitHub Action will run automatically 🎩
 
-### `who-to-greet`
-
-**Required** The name of the person to greet. Default `"World"`.
-
-## Outputs
-
-### `time`
-
-The time we greeted you.
-
-## Example usage
-
-uses: actions/hello-world-javascript-action@v1
-with:
-  who-to-greet: 'Mona the Octocat'
+![Review Example](https://raw.githubusercontent.com/worksome/phpinsights-app/master/art/review-example.png)
