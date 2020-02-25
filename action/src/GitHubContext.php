@@ -14,8 +14,6 @@ class GitHubContext
 
     public stdClass $context;
 
-    private static ?Client $client = null;
-
     /**
      * Context constructor.
      * @param stdClass $context
@@ -118,14 +116,10 @@ class GitHubContext
         return self::getInput($name);
     }
 
-    public static function getGitHubClient(string $name = 'repo token'): Client
+    public static function getGitHubClient($apiVersion = null, string $name = 'repo token'): Client
     {
-        if (self::$client !== null) {
-            return self::$client;
-        }
-
-        self::$client = new Client();
-        self::$client->authenticate(self::getGitHubToken($name), null, Client::AUTH_HTTP_TOKEN);
-        return self::$client;
+        $client = new Client(null, $apiVersion);
+        $client->authenticate(self::getGitHubToken($name), null, Client::AUTH_HTTP_TOKEN);
+        return $client;
     }
 }

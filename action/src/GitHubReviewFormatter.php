@@ -9,6 +9,7 @@ use NunoMaduro\PhpInsights\Domain\Insights\InsightCollection;
 use Worksome\PhpInsightsApp\Actions\Action;
 use Worksome\PhpInsightsApp\Actions\CreateReviewAction;
 use Worksome\PhpInsightsApp\Actions\UpdateBadgesAction;
+use Worksome\PhpInsightsApp\Resolvers\PathResolver;
 
 class GitHubReviewFormatter implements Formatter
 {
@@ -40,8 +41,8 @@ class GitHubReviewFormatter implements Formatter
         ])->each(fn(Action $action) => $action->handle($insightCollection));
     }
 
-    public function getRelativePath(string $file): string
+    public function getPathResolver(): PathResolver
     {
-        return str_replace($this->baseDir . DIRECTORY_SEPARATOR, '', $file);
+        return new PathResolver($this->baseDir);
     }
 }

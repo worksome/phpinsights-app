@@ -5,20 +5,23 @@ namespace Worksome\PhpInsightsApp\Actions;
 
 
 use Github\Client;
+use Illuminate\Support\Collection;
 use NunoMaduro\PhpInsights\Domain\Contracts\HasDetails;
 use NunoMaduro\PhpInsights\Domain\Contracts\Insight;
 use NunoMaduro\PhpInsights\Domain\Details;
 use NunoMaduro\PhpInsights\Domain\Insights\InsightCollection;
 use NunoMaduro\PhpInsights\Domain\Results;
+use Worksome\PhpInsightsApp\GitHub\Comment;
 use Worksome\PhpInsightsApp\GitHubContext;
 use Worksome\PhpInsightsApp\GitHubReviewFormatter;
 use Worksome\PhpInsightsApp\Review;
+use function Clue\StreamFilter\fun;
 
 class CreateReviewAction implements Action
 {
     private Client $client;
     private GitHubContext $githubContext;
-    private $formatter;
+    private GitHubReviewFormatter $formatter;
 
     /**
      * CreateReviewAction constructor.
@@ -27,7 +30,7 @@ class CreateReviewAction implements Action
      */
     public function __construct(GitHubContext $context, GitHubReviewFormatter $formatter)
     {
-        $this->client = $context::getGitHubClient();
+        $this->client = $context::getGitHubClient('comfort-fade-preview');
         $this->githubContext = $context;
         $this->formatter = $formatter;
     }
@@ -39,27 +42,18 @@ class CreateReviewAction implements Action
             return;
         }
 
-        $comments = $this->toComments($insightCollection);
-
-        $reviewStatus = self::getReviewStatus($insightCollection->results(), $comments);
-
-        $this->githubContext::getGitHubClient()->pullRequest()->reviews()->create(
-            $this->githubContext->getRepositoryOwnerLogin(),
-            $this->githubContext->getRepositoryName(),
-            $this->githubContext->getPullRequestNumber(),
-            [
-                //'commit_id' => $githubContext::getCommitSHA(),
-                'event' => $reviewStatus,
-                'body' => $this->getDescription($reviewStatus),
-                //'comments' => array_slice($comments, 0, 22, true)
-            ]
-        );
-
         // Create a draft pull request
+        $reviewId = $this->createDraftPullRequest();
+
+        if ($reviewId === null) {
+            throw new \Exception("Failed creating Pull Request Review.");
+        }
 
         // Create comments
+        $comments = $this->createComments($insightCollection, $reviewId);
 
         // Submit draft pull request.
+        $this->submitDraftPullRequest($insightCollection, $comments, $reviewId);
     }
 
     private static function getDescription(string $reviewStatus): string
@@ -75,7 +69,7 @@ class CreateReviewAction implements Action
         return 'PHP Insights is not happy, please look into the comments, so we can be friends again.';
     }
 
-    private static function getReviewStatus(Results $result, array $comments): string
+    private static function getReviewStatus(Results $result, bool $hasComments): string
     {
         if ($result->getCodeQuality() < 80) {
             return Review::REQUEST_CHANGES;
@@ -97,67 +91,128 @@ class CreateReviewAction implements Action
             return Review::REQUEST_CHANGES;
         }
 
-        return $comments === [] ? Review::APPROVE : Review::COMMENT;
+        return $hasComments === true ? Review::COMMENT : Review::APPROVE;
     }
 
-    private static function formatMessage(Details $detail, Insight $insight): string
+    /**
+     * @param InsightCollection $insightCollection
+     * @param Collection $comments
+     * @param $reviewId
+     */
+    public function submitDraftPullRequest(InsightCollection $insightCollection, Collection $comments, $reviewId): void
     {
-        $message = "[{$insight->getTitle()}] ";
-
-        if ($detail->hasMessage()) {
-            $message .= $detail->getMessage();
-        }
-
-        return $message;
+        $reviewStatus = self::getReviewStatus($insightCollection->results(), $comments->isNotEmpty());
+        $this->client->graphql()->execute(
+        /** @lang GraphQL */ '
+            mutation($reviewId: String! $body: String! $event: PullRequestReviewEvent!) {
+                submitPullRequestReview(
+                    input: {
+                        pullRequestReviewId: $reviewId
+                        body: $body
+                        event: $event
+                    }
+                ) {
+                    pullRequestReview {
+                        id
+                    }
+                }
+            }',
+            [
+                'reviewId' => $reviewId,
+                'body' => $this::getDescription($reviewStatus),
+                'event' => $reviewStatus
+            ]
+        );
     }
 
-    public function toComments(InsightCollection $insightCollection): array
+    /**
+     * @param InsightCollection $insightCollection
+     * @param $reviewId
+     * @return Collection
+     */
+    public function createComments(InsightCollection $insightCollection, $reviewId): Collection
     {
-        $errors = [];
+        return collect($insightCollection->all())
+            ->filter(fn(Insight $insight): bool => $insight instanceof HasDetails && $insight->hasIssue())
+            ->mapToGroups(fn(HasDetails $insight) => [$insight->getTitle() => $insight->getDetails()])
+            ->map(fn(Collection $collection) => $collection->flatten(1))
+            // Remove all details which doesn't have a file.
+            ->map(fn(Collection $collection) => $collection->filter(fn(Details $details) => $details->hasFile()))
+            // Map it to comments.
+            ->flatMap(fn(Collection $collection, string $title) => $collection->map(fn(Details $details) => new Comment(
+                $details,
+                $title,
+                $this->formatter->getPathResolver()
+            ))
+            )
+            // Chunk by 10, so we create 10 comments per request.
+            ->chunk(10)
+            // Map each chunk to a mutation.
+            ->map(function (Collection $chunk) use ($reviewId) {
+                $innerMutations = $chunk->map(function (Comment $comment, int $key) use ($reviewId) {
+                    return [
+                        'innerMutation' => "comment{$key}: addPullRequestReviewThread(
+                            input: {
+                              pullRequestReviewId: \$reviewId
+                              path: \$path{$key}
+                              body: \$body{$key}
+                              line: \$line{$key}
+                            }
+                          ) {
+                            clientMutationId
+                          }",
+                        'variables' => [
+                            "path{$key}" => ['type' => 'String!', 'value' => $comment->getPath()],
+                            "body{$key}" => ['type' => 'String!', 'value' => $comment->getBody()],
+                            "line{$key}" => ['type' => 'Int!', 'value' => $comment->getLine()],
+                        ]
+                    ];
+                });
+                $variables = $innerMutations->pluck('variables')
+                    ->mapWithKeys(fn($variables) => $variables)
+                    ->put('reviewId', ['type' => 'String!', 'value' => $reviewId]);
+                $innerMutation = $innerMutations->pluck('innerMutation')->join(' ');
 
-        foreach ($insightCollection->all() as $insight) {
-            if (!$insight instanceof HasDetails || !$insight->hasIssue()) {
-                continue;
-            }
+                $mutationVariables = $variables
+                    ->map(fn($info, $variableName) => "\${$variableName}: {$info['type']}")
+                    ->join(' ');
 
-            $details = $insight->getDetails();
-
-            /** @var Details $detail */
-            foreach ($details as $detail) {
-                if (!$detail->hasFile()) {
-                    continue;
-                }
-
-                $file = $this->formatter->getRelativePath($detail->getFile());
-                if (!array_key_exists($file, $errors)) {
-                    $errors[$file] = [];
-                }
-
-                $message = self::formatMessage($detail, $insight);
-                // replace line 0 to line 1
-                // github action write it at line 1 otherwise
-                $line = $detail->hasLine() ? $detail->getLine() : 1;
-
-                if (!array_key_exists($line, $errors[$file])) {
-                    $errors[$file][$line] = $message;
-                    continue;
-                }
-
-                $errors[$file][$line] .= "\n" . $message;
-            }
-        }
-
-        $comments = [];
-        foreach ($errors as $file => $lines) {
-            foreach ($lines as $line => $message) {
-                $comments[] = [
-                    'path' => $file,
-                    'position' => $line,
-                    'body' => $message
+                return [
+                    'mutation' => "mutation({$mutationVariables}) { {$innerMutation} }",
+                    'variables' => $variables->map->value->all()
                 ];
-            }
-        }
+            })
+            // Run the mutations
+            ->each(fn(array $mutation) => $this->client->graphql()->execute(
+                $mutation['mutation'],
+                $mutation['variables']
+            ));
+    }
 
-        return $comments;
+    /**
+     * @return mixed
+     */
+    public function createDraftPullRequest()
+    {
+        ['data' => ['addPullRequestReview' => ['pullRequestReview' => ['id' => $reviewId]]], 'errors' => $errors] = $this->client->graphql()->execute(
+        /** @lang GraphQL */ '
+            mutation($prId: String!) {
+              addPullRequestReview(
+                input: {
+                  pullRequestId: $prId
+                }
+              ) {
+                pullRequestReview {
+                  id
+                }
+              }
+            }',
+            [
+                'prId' => $this->githubContext->getPullRequestNodeId(),
+            ]
+        );
+
+        dump($errors ?? null, $reviewId);
+        return $reviewId;
     }
 }
