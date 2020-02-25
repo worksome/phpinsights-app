@@ -87,7 +87,9 @@ class GitHubContext
 
     public static function getHeadReference(): ?string
     {
-        return getenv('GITHUB_HEAD_REF');
+        $githubHeadRef = getenv('GITHUB_HEAD_REF');
+
+        return empty($githubHeadRef) ? null : $githubHeadRef;
     }
 
     public static function getBaseReference(): ?string

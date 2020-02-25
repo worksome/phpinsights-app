@@ -58,6 +58,6 @@ class UpdateBadgesAction implements Action
 
     private function getBranch(): string
     {
-        return $this->context::getHeadReference() ?? $this->context::getReference();
+        return $this->context::getHeadReference() ?? str_replace('refs/heads/', '', $this->context::getReference());
     }
 }
