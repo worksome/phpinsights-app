@@ -194,7 +194,7 @@ class CreateReviewAction implements Action
      */
     public function createDraftPullRequest()
     {
-        ['data' => ['addPullRequestReview' => ['pullRequestReview' => ['id' => $reviewId]]], 'errors' => $errors] = $this->client->graphql()->execute(
+        ['data' => ['addPullRequestReview' => ['pullRequestReview' => ['id' => $reviewId] ] ] ] = $this->client->graphql()->execute(
         /** @lang GraphQL */ '
             mutation($prId: String!) {
               addPullRequestReview(
@@ -212,7 +212,6 @@ class CreateReviewAction implements Action
             ]
         );
 
-        dump($errors ?? null, $reviewId);
         return $reviewId;
     }
 }

@@ -2,15 +2,15 @@
     "name": "worksome/phpinsights_app",
     "description": "PHP Insights App",
     "type": "project",
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "require": {
-        "nunomaduro/phpinsights": "dev-master",
+        "nunomaduro/phpinsights": "dev-master@dev",
         "guzzlehttp/guzzle": "^6.5",
-        "symfony/var-dumper": "^5.0",
+        "symfony/var-dumper": "^4.0",
         "ext-json": "*",
         "knplabs/github-api": "^2.13@dev",
         "php-http/guzzle6-adapter": "^1.1",
-        "illuminate/support": "^8.0@dev"
+        "illuminate/support": "^6.16"
     },
     "authors": [
         {
@@ -25,5 +25,6 @@
     },
     "bin": ["bin/phpinsights-app.php"],
     "require-dev": {
+        "humbug/box": "^3.8"
     }
 }

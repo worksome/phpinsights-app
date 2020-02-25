@@ -1,0 +1,22 @@
+name: Publish Docker for GitHub Action
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'action/*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Publish to Registry
+        uses: elgohr/Publish-Docker-Github-Action@master
+    with:
+      name: worksome/phpinsights-app/action
+      username: olivernybroe
+      password: ${{ secrets.GITHUB_TOKEN }}
+      registry: docker.pkg.github.com
+      workdir: action

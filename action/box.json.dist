@@ -1,8 +1,12 @@
 {
     "chmod": "0700",
     "directories": [
-      "vendor",
-      "src"
+      "vendor/friendsofphp"
     ],
-    "output": "../phpinsights-app.phar"
+    "force-autodiscovery": true,
+    "output": "phpinsights-app.phar",
+    "compactors": [
+        "KevinGH\\Box\\Compactor\\Php",
+        "KevinGH\\Box\\Compactor\\Json"
+    ]
 }
