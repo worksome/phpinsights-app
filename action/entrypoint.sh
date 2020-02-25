@@ -1,3 +1,3 @@
 #!/bin/sh -l
 
-./phpinsights-app.phar $GITHUB_WORKSPACE $*
+php /action/phpinsights-app.phar $GITHUB_WORKSPACE $*
