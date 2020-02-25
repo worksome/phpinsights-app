@@ -15,7 +15,7 @@ jobs:
       - name: Publish to Registry
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
-          name: worksome/phpinsights-app/action
+          name: worksome/phpinsights-app/phpinsights-app-action
           username: olivernybroe
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: docker.pkg.github.com
