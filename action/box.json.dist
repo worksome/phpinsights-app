@@ -1,7 +1,8 @@
 {
     "chmod": "0700",
     "directories": [
-      "vendor/friendsofphp"
+      "vendor/friendsofphp",
+      "vendor/slevomat"
     ],
     "force-autodiscovery": true,
     "output": "../phpinsights-app.phar",
