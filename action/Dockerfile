@@ -11,5 +11,6 @@ FROM php:7.4-alpine
 
 COPY entrypoint.sh /entrypoint.sh
 COPY --from=0 /action/phpinsights-app.phar /phpinsights-app.phar
+WORKDIR /
 
 ENTRYPOINT ["/entrypoint.sh"]
