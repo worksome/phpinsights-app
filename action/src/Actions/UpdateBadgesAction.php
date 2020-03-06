@@ -20,9 +20,6 @@ class UpdateBadgesAction implements Action
 
     /**
      * UpdateBadgesAction constructor.
-     *
-     * @param GitHubContext $context
-     * @param Configuration $configuration
      */
     public function __construct(GitHubContext $context, Configuration $configuration)
     {

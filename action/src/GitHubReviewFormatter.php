@@ -29,7 +29,7 @@ class GitHubReviewFormatter implements Formatter
     }
 
     /**
-     * @param \NunoMaduro\PhpInsights\Domain\Insights\InsightCollection $insightCollection
+     * @param InsightCollection $insightCollection
      * @param string $dir
      * @param array<int, string> $metrics
      */
