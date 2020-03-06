@@ -13,7 +13,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: PHP Insights App
-        uses: ./ # Uses an action in the root directory
+        uses: ./.github/actions/ # Uses an action in the root directory
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           workingDir: 'action'
