@@ -29,11 +29,12 @@ require_once __DIR__ . '/../vendor/squizlabs/php_codesniffer/autoload.php';
 
 $container = Container::make();
 
+dump(sprintf("%s/%s", $_SERVER['argv'][1], GitHubContext::getInput('workingDir')));
 $configuration = ConfigResolver::resolve(
     [],
     new ArrayInput(
         [
-            'directory' => GitHubContext::getInput('workingDir', $_SERVER['argv'][1])
+            'directory' => sprintf("%s/%s", $_SERVER['argv'][1], GitHubContext::getInput('workingDir'))
         ],
         AnalyseDefinition::get()
     )
