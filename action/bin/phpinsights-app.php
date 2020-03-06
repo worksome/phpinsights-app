@@ -31,11 +31,9 @@ $container = Container::make();
 
 $configuration = ConfigResolver::resolve(
     [],
-    DirectoryResolver::resolve(
-        new ArgvInput(
-            null,
-            AnalyseDefinition::get()
-        )
+    new ArgvInput(
+        null,
+        AnalyseDefinition::get()
     )
 );
 
