@@ -41,7 +41,7 @@ $configuration = ConfigResolver::resolve(
     )
 );
 
-echo "Running in [$workDir}]. \n";
+echo "Running in [{$workDir}]. \n";
 
 $configurationDefinition = $container->extend(Configuration::class);
 $configurationDefinition->setConcrete($configuration);

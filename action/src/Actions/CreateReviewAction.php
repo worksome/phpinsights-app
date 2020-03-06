@@ -57,23 +57,21 @@ class CreateReviewAction implements Action
     private static function getDescription(Results $results, string $reviewStatus): string
     {
         $table = sprintf(
-            "| code | Complexity | Architecture | Style |
-|-|-|-|-|
-|%s|%s|%s|%s|",
+            "| code | Complexity | Architecture | Style |\n|:-:|:-:|:-:|:-:|\n|%s%%|%s%%|%s%%|%s%%|",
             $results->getCodeQuality(),
             $results->getComplexity(),
             $results->getStructure(),
             $results->getStyle(),
         );
         if ($reviewStatus === Review::APPROVE) {
-            return "{$table}\nPHP Insights found nothing wrong, your code is near perfect!";
+            return "PHP Insights found nothing wrong, your code is near perfect!\n{$table}";
         }
 
         if ($reviewStatus === Review::COMMENT) {
-            return "{$table}\nPHP Insights has some concerns, please look into it.";
+            return "PHP Insights has some concerns, please look into it.\n{$table}";
         }
 
-        return "{$table}\nPHP Insights is not happy, please look into the comments, so we can be friends again.";
+        return "PHP Insights is not happy, please look into the comments, so we can be friends again.\n{$table}";
     }
 
     private function getReviewStatus(Results $result, bool $hasComments): string
