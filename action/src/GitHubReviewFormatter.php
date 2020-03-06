@@ -29,8 +29,6 @@ class GitHubReviewFormatter implements Formatter
     }
 
     /**
-     * @param InsightCollection $insightCollection
-     * @param string $dir
      * @param array<int, string> $metrics
      */
     public function format(InsightCollection $insightCollection, string $dir, array $metrics): void
