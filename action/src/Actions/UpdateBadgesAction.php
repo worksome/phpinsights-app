@@ -20,11 +20,8 @@ class UpdateBadgesAction implements Action
 
     /**
      * UpdateBadgesAction constructor.
-     *
-     * @param GitHubContext $context
-     * @param Configuration $configuration
      */
-    public function __construct( GitHubContext $context, Configuration $configuration)
+    public function __construct(GitHubContext $context, Configuration $configuration)
     {
         $this->client = new BadgesClient($context::getGitHubToken());
         $this->context = $context;
@@ -47,10 +44,10 @@ class UpdateBadgesAction implements Action
                     'style' => $results->getStyle(),
                 ],
                 'requirements' => [
-                    'min-code' => 80,
-                    'min-architecture' => 80,
-                    'min-complexity' => 80,
-                    'min-style' => 80,
+                    'min-code' => $this->configuration->getMinQuality(),
+                    'min-architecture' => $this->configuration->getMinArchitecture(),
+                    'min-complexity' => $this->configuration->getMinComplexity(),
+                    'min-style' => $this->configuration->getMinStyle(),
                 ],
             ]
         );

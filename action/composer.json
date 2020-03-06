@@ -2,7 +2,6 @@
     "name": "worksome/phpinsights_app",
     "description": "PHP Insights App",
     "type": "project",
-    "minimum-stability": "stable",
     "require": {
         "nunomaduro/phpinsights": "dev-master@dev",
         "guzzlehttp/guzzle": "^6.5",

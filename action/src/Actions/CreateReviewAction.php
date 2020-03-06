@@ -6,6 +6,7 @@ namespace Worksome\PhpInsightsApp\Actions;
 
 use Github\Client;
 use Illuminate\Support\Collection;
+use NunoMaduro\PhpInsights\Domain\Configuration;
 use NunoMaduro\PhpInsights\Domain\Contracts\HasDetails;
 use NunoMaduro\PhpInsights\Domain\Contracts\Insight;
 use NunoMaduro\PhpInsights\Domain\Details;
@@ -22,17 +23,14 @@ class CreateReviewAction implements Action
     private Client $client;
     private GitHubContext $githubContext;
     private GitHubReviewFormatter $formatter;
+    private Configuration $configuration;
 
-    /**
-     * CreateReviewAction constructor.
-     * @param GitHubContext $context
-     * @param GitHubReviewFormatter $formatter
-     */
-    public function __construct(GitHubContext $context, GitHubReviewFormatter $formatter)
+    public function __construct(GitHubContext $context, GitHubReviewFormatter $formatter, Configuration $configuration)
     {
         $this->client = $context::getGitHubClient('comfort-fade-preview');
         $this->githubContext = $context;
         $this->formatter = $formatter;
+        $this->configuration = $configuration;
     }
 
     public function handle(InsightCollection $insightCollection): void
@@ -56,52 +54,49 @@ class CreateReviewAction implements Action
         $this->submitDraftPullRequest($insightCollection, $comments, $reviewId);
     }
 
-    private static function getDescription(string $reviewStatus): string
+    private static function getDescription(Results $results, string $reviewStatus): string
     {
+        $table = sprintf(
+            "| code | Complexity | Architecture | Style |\n|:-:|:-:|:-:|:-:|\n|%s%%|%s%%|%s%%|%s%%|",
+            $results->getCodeQuality(),
+            $results->getComplexity(),
+            $results->getStructure(),
+            $results->getStyle(),
+        );
         if ($reviewStatus === Review::APPROVE) {
-            return 'PHP Insights found nothing wrong, your code is near perfect!';
+            return "PHP Insights found nothing wrong, your code is near perfect!\n{$table}";
         }
 
         if ($reviewStatus === Review::COMMENT) {
-            return 'PHP Insights has some concerns, please look into it.';
+            return "PHP Insights has some concerns, please look into it.\n{$table}";
         }
 
-        return 'PHP Insights is not happy, please look into the comments, so we can be friends again.';
+        return "PHP Insights is not happy, please look into the comments, so we can be friends again.\n{$table}";
     }
 
-    private static function getReviewStatus(Results $result, bool $hasComments): string
+    private function getReviewStatus(Results $result, bool $hasComments): string
     {
-        if ($result->getCodeQuality() < 80) {
-            return Review::REQUEST_CHANGES;
-        }
+        $checks = [
+            $result->getCodeQuality() < $this->configuration->getMinQuality(),
+            $result->getComplexity() < $this->configuration->getMinComplexity(),
+            $result->getStructure() < $this->configuration->getMinArchitecture(),
+            $result->getStyle() < $this->configuration->getMinStyle(),
+            !$this->configuration->isSecurityCheckDisabled() && $result->getTotalSecurityIssues() > 0,
+        ];
 
-        if ($result->getComplexity() < 80) {
-            return Review::REQUEST_CHANGES;
-        }
-
-        if ($result->getStructure() < 80) {
-            return Review::REQUEST_CHANGES;
-        }
-
-        if ($result->getStyle() < 80) {
-            return Review::REQUEST_CHANGES;
-        }
-
-        if ($result->getTotalSecurityIssues() > 0) {
+        if (collect($checks)->contains(true)) {
             return Review::REQUEST_CHANGES;
         }
 
         return $hasComments === true ? Review::COMMENT : Review::APPROVE;
     }
 
-    /**
-     * @param InsightCollection $insightCollection
-     * @param Collection $comments
-     * @param $reviewId
-     */
-    public function submitDraftPullRequest(InsightCollection $insightCollection, Collection $comments, $reviewId): void
+    public function submitDraftPullRequest(InsightCollection $insightCollection,
+                                           Collection $comments,
+                                           string $reviewId): void
     {
-        $reviewStatus = self::getReviewStatus($insightCollection->results(), $comments->isNotEmpty());
+        $results = $insightCollection->results();
+        $reviewStatus = $this->getReviewStatus($results, $comments->isNotEmpty());
         $this->client->graphql()->execute(
         /** @lang GraphQL */ '
             mutation($reviewId: String! $body: String! $event: PullRequestReviewEvent!) {
@@ -119,7 +114,7 @@ class CreateReviewAction implements Action
             }',
             [
                 'reviewId' => $reviewId,
-                'body' => $this::getDescription($reviewStatus),
+                'body' => $this::getDescription($results, $reviewStatus),
                 'event' => $reviewStatus
             ]
         );
@@ -189,10 +184,7 @@ class CreateReviewAction implements Action
             ));
     }
 
-    /**
-     * @return mixed
-     */
-    public function createDraftPullRequest()
+    public function createDraftPullRequest(): string
     {
         ['data' => ['addPullRequestReview' => ['pullRequestReview' => ['id' => $reviewId] ] ] ] = $this->client->graphql()->execute(
         /** @lang GraphQL */ '

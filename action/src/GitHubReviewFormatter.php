@@ -25,20 +25,20 @@ class GitHubReviewFormatter implements Formatter
     {
         $this->configuration = $configuration;
         $this->githubContext = $gitHubContext;
-        $this->baseDir = $configuration->getDirectory();
+        $this->baseDir = getcwd() ?? $gitHubContext::getWorkSpaceDirectory();
     }
 
     /**
-     * @param \NunoMaduro\PhpInsights\Domain\Insights\InsightCollection $insightCollection
-     * @param string $dir
+     * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter
+     *
      * @param array<int, string> $metrics
      */
     public function format(InsightCollection $insightCollection, string $dir, array $metrics): void
     {
         collect([
-            new CreateReviewAction($this->githubContext, $this),
+            new CreateReviewAction($this->githubContext, $this, $this->configuration),
             new UpdateBadgesAction($this->githubContext, $this->configuration),
-        ])->each(fn(Action $action) => $action->handle($insightCollection));
+        ])->each(static fn(Action $action) => $action->handle($insightCollection));
     }
 
     public function getPathResolver(): PathResolver
