@@ -5,4 +5,4 @@ branding:
   color: 'green'
 runs:
   using: 'docker'
-  image: 'action/Dockerfile'
+  image: 'docker://worksome/phpinsights-app-action:latest'

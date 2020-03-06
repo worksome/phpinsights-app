@@ -57,7 +57,7 @@ class CreateReviewAction implements Action
     private static function getDescription(Results $results, string $reviewStatus): string
     {
         $table = sprintf(
-            "| code | Complexity | Architecture | Style |\n|:-:|:-:|:-:|:-:|\n|%s%%|%s%%|%s%%|%s%%|",
+            "| Code | Complexity | Architecture | Style |\n|:-:|:-:|:-:|:-:|\n|%s%%|%s%%|%s%%|%s%%|",
             $results->getCodeQuality(),
             $results->getComplexity(),
             $results->getStructure(),

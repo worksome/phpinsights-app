@@ -46,14 +46,9 @@ echo "Running in [{$workDir}]. \n";
 $configurationDefinition = $container->extend(Configuration::class);
 $configurationDefinition->setConcrete($configuration);
 
-dump(GitHubContext::getRuntimeUrl(), GitHubContext::getWorkFlowRunId(), str_split(GitHubContext::getRuntimeToken(), 1500));
-$token = GitHubContext::getGitHubToken();
-dump(str_split($token, round(strlen($token) / 2)));
-dump([
-    'ref' => getenv('GITHUB_REF'),
-    'head_ref' => getenv('GITHUB_HEAD_REF'),
-    'base_ref' => getenv('GITHUB_BASE_REF'),
-]);
+//dump(GitHubContext::getRuntimeUrl(), GitHubContext::getWorkFlowRunId(), str_split(GitHubContext::getRuntimeToken(), 1500));
+//$token = GitHubContext::getGitHubToken();
+//dump(str_split($token, round(strlen($token) / 2)));
 
 /** @var Analyser $analyser */
 $analyser = $container->get(Analyser::class);
