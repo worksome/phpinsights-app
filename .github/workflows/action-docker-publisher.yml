@@ -6,6 +6,8 @@ on:
       - master
     paths:
       - 'action/*'
+  schedule:
+    - cron: '0 0 * * *'
 
 jobs:
   build:
