@@ -69,35 +69,24 @@ class CreateReviewAction implements Action
 
     private function getReviewStatus(Results $result, bool $hasComments): string
     {
-        if ($result->getCodeQuality() < $this->configuration->getMinQuality()) {
-            return Review::REQUEST_CHANGES;
-        }
+        $checks = [
+            $result->getCodeQuality() < $this->configuration->getMinQuality(),
+            $result->getComplexity() < $this->configuration->getMinComplexity(),
+            $result->getStructure() < $this->configuration->getMinArchitecture(),
+            $result->getStyle() < $this->configuration->getMinStyle(),
+            !$this->configuration->isSecurityCheckDisabled() && $result->getTotalSecurityIssues() > 0,
+        ];
 
-        if ($result->getComplexity() < $this->configuration->getMinComplexity()) {
-            return Review::REQUEST_CHANGES;
-        }
-
-        if ($result->getStructure() < $this->configuration->getMinArchitecture()) {
-            return Review::REQUEST_CHANGES;
-        }
-
-        if ($result->getStyle() < $this->configuration->getMinStyle()) {
-            return Review::REQUEST_CHANGES;
-        }
-
-        if (!$this->configuration->isSecurityCheckDisabled() && $result->getTotalSecurityIssues() > 0) {
+        if (collect($checks)->contains(true)) {
             return Review::REQUEST_CHANGES;
         }
 
         return $hasComments === true ? Review::COMMENT : Review::APPROVE;
     }
 
-    /**
-     * @param InsightCollection $insightCollection
-     * @param Collection $comments
-     * @param $reviewId
-     */
-    public function submitDraftPullRequest(InsightCollection $insightCollection, Collection $comments, $reviewId): void
+    public function submitDraftPullRequest(InsightCollection $insightCollection,
+                                           Collection $comments,
+                                           string $reviewId): void
     {
         $reviewStatus = $this->getReviewStatus($insightCollection->results(), $comments->isNotEmpty());
         $this->client->graphql()->execute(
@@ -187,10 +176,7 @@ class CreateReviewAction implements Action
             ));
     }
 
-    /**
-     * @return mixed
-     */
-    public function createDraftPullRequest()
+    public function createDraftPullRequest(): string
     {
         ['data' => ['addPullRequestReview' => ['pullRequestReview' => ['id' => $reviewId] ] ] ] = $this->client->graphql()->execute(
         /** @lang GraphQL */ '

@@ -38,7 +38,7 @@ class GitHubReviewFormatter implements Formatter
         collect([
             new CreateReviewAction($this->githubContext, $this, $this->configuration),
             new UpdateBadgesAction($this->githubContext, $this->configuration),
-        ])->each(fn(Action $action) => $action->handle($insightCollection));
+        ])->each(static fn(Action $action) => $action->handle($insightCollection));
     }
 
     public function getPathResolver(): PathResolver
