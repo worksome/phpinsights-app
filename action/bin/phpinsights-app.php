@@ -29,18 +29,19 @@ require_once __DIR__ . '/../vendor/squizlabs/php_codesniffer/autoload.php';
 
 $container = Container::make();
 
-dump(sprintf("%s/%s", $_SERVER['argv'][1], GitHubContext::getInput('workingDir')));
+$workDir = sprintf("%s/%s", $_SERVER['argv'][1], GitHubContext::getInput('workingDir'));
+$configPath = $workDir . DIRECTORY_SEPARATOR . '/phpinsights.php';
 $configuration = ConfigResolver::resolve(
-    [],
+    file_exists($configPath) ? require_once $configPath : [],
     new ArrayInput(
         [
-            'directory' => sprintf("%s/%s", $_SERVER['argv'][1], GitHubContext::getInput('workingDir'))
+            'directory' => $workDir
         ],
         AnalyseDefinition::get()
     )
 );
 
-echo "Running in [{$configuration->getDirectory()}]. \n";
+echo "Running in [$workDir}]. \n";
 
 $configurationDefinition = $container->extend(Configuration::class);
 $configurationDefinition->setConcrete($configuration);

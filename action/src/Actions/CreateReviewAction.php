@@ -54,17 +54,26 @@ class CreateReviewAction implements Action
         $this->submitDraftPullRequest($insightCollection, $comments, $reviewId);
     }
 
-    private static function getDescription(string $reviewStatus): string
+    private static function getDescription(Results $results, string $reviewStatus): string
     {
+        $table = sprintf(
+            "| code | Complexity | Architecture | Style |
+|-|-|-|-|
+|%s|%s|%s|%s|",
+            $results->getCodeQuality(),
+            $results->getComplexity(),
+            $results->getStructure(),
+            $results->getStyle(),
+        );
         if ($reviewStatus === Review::APPROVE) {
-            return 'PHP Insights found nothing wrong, your code is near perfect!';
+            return "{$table}\nPHP Insights found nothing wrong, your code is near perfect!";
         }
 
         if ($reviewStatus === Review::COMMENT) {
-            return 'PHP Insights has some concerns, please look into it.';
+            return "{$table}\nPHP Insights has some concerns, please look into it.";
         }
 
-        return 'PHP Insights is not happy, please look into the comments, so we can be friends again.';
+        return "{$table}\nPHP Insights is not happy, please look into the comments, so we can be friends again.";
     }
 
     private function getReviewStatus(Results $result, bool $hasComments): string
@@ -88,7 +97,8 @@ class CreateReviewAction implements Action
                                            Collection $comments,
                                            string $reviewId): void
     {
-        $reviewStatus = $this->getReviewStatus($insightCollection->results(), $comments->isNotEmpty());
+        $results = $insightCollection->results();
+        $reviewStatus = $this->getReviewStatus($results, $comments->isNotEmpty());
         $this->client->graphql()->execute(
         /** @lang GraphQL */ '
             mutation($reviewId: String! $body: String! $event: PullRequestReviewEvent!) {
@@ -106,7 +116,7 @@ class CreateReviewAction implements Action
             }',
             [
                 'reviewId' => $reviewId,
-                'body' => $this::getDescription($reviewStatus),
+                'body' => $this::getDescription($results, $reviewStatus),
                 'event' => $reviewStatus
             ]
         );
