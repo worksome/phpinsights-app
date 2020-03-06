@@ -31,11 +31,15 @@ $container = Container::make();
 
 $configuration = ConfigResolver::resolve(
     [],
-    new ArgvInput(
-        null,
+    new ArrayInput(
+        [
+            GitHubContext::getInput('workingDir', $_SERVER['argv'][1])
+        ],
         AnalyseDefinition::get()
     )
 );
+
+echo "Running in [{$configuration->getDirectory()}]. \n";
 
 $configurationDefinition = $container->extend(Configuration::class);
 $configurationDefinition->setConcrete($configuration);

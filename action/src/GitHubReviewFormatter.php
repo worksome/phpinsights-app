@@ -25,7 +25,7 @@ class GitHubReviewFormatter implements Formatter
     {
         $this->configuration = $configuration;
         $this->githubContext = $gitHubContext;
-        $this->baseDir = $configuration->getDirectory();
+        $this->baseDir = getcwd() ?? $gitHubContext::getWorkSpaceDirectory();
     }
 
     /**
