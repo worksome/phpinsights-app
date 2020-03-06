@@ -6,6 +6,7 @@ namespace Worksome\PhpInsightsApp\Actions;
 
 use Github\Client;
 use Illuminate\Support\Collection;
+use NunoMaduro\PhpInsights\Domain\Configuration;
 use NunoMaduro\PhpInsights\Domain\Contracts\HasDetails;
 use NunoMaduro\PhpInsights\Domain\Contracts\Insight;
 use NunoMaduro\PhpInsights\Domain\Details;
@@ -22,17 +23,14 @@ class CreateReviewAction implements Action
     private Client $client;
     private GitHubContext $githubContext;
     private GitHubReviewFormatter $formatter;
+    private Configuration $configuration;
 
-    /**
-     * CreateReviewAction constructor.
-     * @param GitHubContext $context
-     * @param GitHubReviewFormatter $formatter
-     */
-    public function __construct(GitHubContext $context, GitHubReviewFormatter $formatter)
+    public function __construct(GitHubContext $context, GitHubReviewFormatter $formatter, Configuration $configuration)
     {
         $this->client = $context::getGitHubClient('comfort-fade-preview');
         $this->githubContext = $context;
         $this->formatter = $formatter;
+        $this->configuration = $configuration;
     }
 
     public function handle(InsightCollection $insightCollection): void
@@ -69,25 +67,25 @@ class CreateReviewAction implements Action
         return 'PHP Insights is not happy, please look into the comments, so we can be friends again.';
     }
 
-    private static function getReviewStatus(Results $result, bool $hasComments): string
+    private function getReviewStatus(Results $result, bool $hasComments): string
     {
-        if ($result->getCodeQuality() < 80) {
+        if ($result->getCodeQuality() < $this->configuration->getMinQuality()) {
             return Review::REQUEST_CHANGES;
         }
 
-        if ($result->getComplexity() < 80) {
+        if ($result->getComplexity() < $this->configuration->getMinComplexity()) {
             return Review::REQUEST_CHANGES;
         }
 
-        if ($result->getStructure() < 80) {
+        if ($result->getStructure() < $this->configuration->getMinArchitecture()) {
             return Review::REQUEST_CHANGES;
         }
 
-        if ($result->getStyle() < 80) {
+        if ($result->getStyle() < $this->configuration->getMinStyle()) {
             return Review::REQUEST_CHANGES;
         }
 
-        if ($result->getTotalSecurityIssues() > 0) {
+        if (!$this->configuration->isSecurityCheckDisabled() && $result->getTotalSecurityIssues() > 0) {
             return Review::REQUEST_CHANGES;
         }
 
@@ -101,7 +99,7 @@ class CreateReviewAction implements Action
      */
     public function submitDraftPullRequest(InsightCollection $insightCollection, Collection $comments, $reviewId): void
     {
-        $reviewStatus = self::getReviewStatus($insightCollection->results(), $comments->isNotEmpty());
+        $reviewStatus = $this->getReviewStatus($insightCollection->results(), $comments->isNotEmpty());
         $this->client->graphql()->execute(
         /** @lang GraphQL */ '
             mutation($reviewId: String! $body: String! $event: PullRequestReviewEvent!) {

@@ -36,7 +36,7 @@ class GitHubReviewFormatter implements Formatter
     public function format(InsightCollection $insightCollection, string $dir, array $metrics): void
     {
         collect([
-            new CreateReviewAction($this->githubContext, $this),
+            new CreateReviewAction($this->githubContext, $this, $this->configuration),
             new UpdateBadgesAction($this->githubContext, $this->configuration),
         ])->each(fn(Action $action) => $action->handle($insightCollection));
     }
