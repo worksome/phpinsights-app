@@ -29,6 +29,8 @@ class GitHubReviewFormatter implements Formatter
     }
 
     /**
+     * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter
+     *
      * @param array<int, string> $metrics
      */
     public function format(InsightCollection $insightCollection, string $dir, array $metrics): void
