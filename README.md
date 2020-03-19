@@ -10,3 +10,32 @@ This tool will run PHP Insights for you and provide you with GitHub reviews, bad
 To use it add the example workflow file to your GitHub repository, and the GitHub Action will run automatically 🎩
 
 ![Review Example](https://raw.githubusercontent.com/worksome/phpinsights-app/master/art/review-example.png)
+
+Adding the following workflow file, will make phpinsights run on pull request, where it will create a review with the errors.  
+We also allow it here to run on pushes to the master branch. By allowing this, the badges for the master branch will be updated.
+
+```yaml
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  static_analysis:
+    runs-on: ubuntu-latest
+    name: Static analysis
+    steps:
+      # You must check out upir repository, so we can analyse it
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: PHP Insights App
+        uses: worksome/phpinsights-app@v0.1
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          workingDir: '.'
+```
+
+The action has the following two parameters:
+- `repo_token`: The GitHub API token, which is used to generate the review. Keeping it as `${{ secrets.GITHUB_TOKEN }}` will make it use the token from the GitHub action.
+- `workingDir`: This set's the directory which we will run the tool on. This is useful if you have a repository with multiple projects in it.
