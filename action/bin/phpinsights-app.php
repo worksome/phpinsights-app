@@ -50,7 +50,7 @@ $formatter = new GitHubReviewFormatter(
     GitHubContext::fromEnv()
 );
 
-$results = $analyser->analyse(
+$analyser->analyse(
     $formatter,
     new NullOutput()
 );
