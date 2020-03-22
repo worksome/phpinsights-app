@@ -63,7 +63,7 @@ return [
     ],
 
     'remove' => [
-        //  ExampleInsight::class,
+        \NunoMaduro\PhpInsights\Domain\Insights\ForbiddenNormalClasses::class,
     ],
 
     'config' => [

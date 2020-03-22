@@ -1,8 +1,8 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Worksome\PhpInsightsApp\Actions;
-
 
 use Github\Client;
 use Illuminate\Support\Collection;
@@ -114,16 +114,14 @@ class CreateReview implements Action
             }',
             [
                 'reviewId' => $reviewId,
-                'body' => $this::getDescription($results, $reviewStatus),
+                'body' => CreateReview::getDescription($results, $reviewStatus),
                 'event' => $reviewStatus
             ]
         );
     }
 
     /**
-     * @param InsightCollection $insightCollection
      * @param $reviewId
-     * @return Collection
      */
     public function createComments(InsightCollection $insightCollection, $reviewId): Collection
     {
@@ -143,7 +141,7 @@ class CreateReview implements Action
             // Chunk by 10, so we create 10 comments per request.
             ->chunk(10)
             // Map each chunk to a mutation.
-            ->map(function (Collection $chunk) use ($reviewId) {
+            ->map(static function (Collection $chunk) use ($reviewId) {
                 $innerMutations = $chunk->map(function (Comment $comment, int $key) use ($reviewId) {
                     return [
                         'innerMutation' => "comment{$key}: addPullRequestReviewThread(
