@@ -1,8 +1,8 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Worksome\PhpInsightsApp;
-
 
 use Github\Client;
 use stdClass;

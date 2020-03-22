@@ -1,8 +1,8 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Worksome\PhpInsightsApp\GitHub;
-
 
 use NunoMaduro\PhpInsights\Domain\Details;
 use Worksome\PhpInsightsApp\Resolvers\PathResolver;

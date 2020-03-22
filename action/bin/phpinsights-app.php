@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use NunoMaduro\PhpInsights\Application\ConfigResolver;
 use NunoMaduro\PhpInsights\Application\Console\Analyser;
 use NunoMaduro\PhpInsights\Application\Console\Definitions\AnalyseDefinition;
@@ -27,7 +29,7 @@ $configuration = ConfigResolver::resolve(
     file_exists($configPath) ? require_once $configPath : [],
     new ArrayInput(
         [
-            'directory' => $workDir
+            'directory' => $workDir,
         ],
         AnalyseDefinition::get()
     )
@@ -38,7 +40,11 @@ echo "Running in [{$workDir}]. \n";
 $configurationDefinition = $container->extend(Configuration::class);
 $configurationDefinition->setConcrete($configuration);
 
-//dump(GitHubContext::getRuntimeUrl(), GitHubContext::getWorkFlowRunId(), str_split(GitHubContext::getRuntimeToken(), 1500));
+//dump(
+//GitHubContext::getRuntimeUrl(),
+//GitHubContext::getWorkFlowRunId(),
+//str_split(GitHubContext::getRuntimeToken(), 1500)
+//);
 //$token = GitHubContext::getGitHubToken();
 //dump(str_split($token, round(strlen($token) / 2)));
 
