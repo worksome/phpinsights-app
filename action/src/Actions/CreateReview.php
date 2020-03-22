@@ -18,7 +18,7 @@ use Worksome\PhpInsightsApp\GitHubReviewFormatter;
 use Worksome\PhpInsightsApp\Review;
 use function Clue\StreamFilter\fun;
 
-class CreateReviewAction implements Action
+class CreateReview implements Action
 {
     private Client $client;
     private GitHubContext $githubContext;

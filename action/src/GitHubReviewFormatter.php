@@ -7,8 +7,9 @@ use NunoMaduro\PhpInsights\Application\Console\Contracts\Formatter;
 use NunoMaduro\PhpInsights\Domain\Configuration;
 use NunoMaduro\PhpInsights\Domain\Insights\InsightCollection;
 use Worksome\PhpInsightsApp\Actions\Action;
-use Worksome\PhpInsightsApp\Actions\CreateReviewAction;
-use Worksome\PhpInsightsApp\Actions\UpdateBadgesAction;
+use Worksome\PhpInsightsApp\Actions\CreateGitHubActionOutput;
+use Worksome\PhpInsightsApp\Actions\CreateReview;
+use Worksome\PhpInsightsApp\Actions\UpdateBadges;
 use Worksome\PhpInsightsApp\Resolvers\PathResolver;
 
 class GitHubReviewFormatter implements Formatter
@@ -36,8 +37,9 @@ class GitHubReviewFormatter implements Formatter
     public function format(InsightCollection $insightCollection, string $dir, array $metrics): void
     {
         collect([
-            new CreateReviewAction($this->githubContext, $this, $this->configuration),
-            new UpdateBadgesAction($this->githubContext, $this->configuration),
+            new CreateReview($this->githubContext, $this, $this->configuration),
+            new UpdateBadges($this->githubContext, $this->configuration),
+            new CreateGitHubActionOutput($this->githubContext, $dir, $metrics),
         ])->each(static fn(Action $action) => $action->handle($insightCollection));
     }
 

@@ -10,7 +10,7 @@ use Worksome\PhpInsightsApp\Badges\Client;
 use Worksome\PhpInsightsApp\Badges\Client as BadgesClient;
 use Worksome\PhpInsightsApp\GitHubContext;
 
-class UpdateBadgesAction implements Action
+class UpdateBadges implements Action
 {
     private Client $client;
 
