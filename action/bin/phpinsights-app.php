@@ -26,7 +26,7 @@ echo sprintf("memory limit is set to %s\n", ini_get('memory_limit'));
 $container = Container::make();
 
 $workDir = sprintf("%s/%s", $_SERVER['argv'][1], GitHubContext::getInput('workingDir'));
-$configPath = $workDir . DIRECTORY_SEPARATOR . '/phpinsights.php';
+$configPath = GitHubContext::getInput('config_path') ?? ($workDir . DIRECTORY_SEPARATOR . '/phpinsights.php');
 $configuration = ConfigResolver::resolve(
     file_exists($configPath) ? require_once $configPath : [],
     new ArrayInput(
