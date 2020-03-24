@@ -3,6 +3,7 @@ FROM php:7.4-alpine
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 COPY . /action
 WORKDIR /action
+RUN apk add --no-cache git
 RUN composer install
 RUN php vendor/bin/box compile --dev
 
