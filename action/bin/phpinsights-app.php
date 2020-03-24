@@ -16,6 +16,8 @@ use Worksome\PhpInsightsApp\GitHubReviewFormatter;
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../vendor/squizlabs/php_codesniffer/autoload.php';
 
+echo sprintf("memory limit is set to %s\n", ini_get('memory_limit'));
+
 /**
  * Bootstraps the domain kernel.
  */
