@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Worksome\PhpInsightsApp;
 
+use Exception;
 use NunoMaduro\PhpInsights\Application\Console\Contracts\Formatter;
 use NunoMaduro\PhpInsights\Domain\Configuration;
 use NunoMaduro\PhpInsights\Domain\Insights\InsightCollection;
@@ -45,7 +46,17 @@ class GitHubReviewFormatter implements Formatter
             new CreateReview($this->githubContext, $this, $this->configuration),
             new UpdateBadges($this->githubContext, $this->configuration),
             new CreateGitHubActionOutput($this->githubContext, $dir, $metrics),
-        ])->each(static fn(Action $action) => $action->handle($insightCollection));
+        ])->each(static function (Action $action) use ($insightCollection) {
+            try {
+                $action->handle($insightCollection);
+            } catch (Exception $exception) {
+                echo sprintf(
+                    "Failed on action [%s] with message [%s]\n",
+                    class_basename($action),
+                    $exception->getMessage()
+                );
+            }
+        });
     }
 
     public function getPathResolver(): PathResolver

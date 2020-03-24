@@ -31,12 +31,6 @@ class CreateGitHubActionOutput implements Action
 
     public function handle(InsightCollection $insightCollection): void
     {
-        // Early exist if in a pull request.
-        // Then we rely on a review.
-        if ($this->gitHubContext->inPullRequest()) {
-            return;
-        }
-
         $actionFormatter = new GithubAction(
             new ArrayInput([]),
             new ConsoleOutput()
