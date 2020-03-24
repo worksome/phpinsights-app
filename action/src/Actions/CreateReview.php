@@ -17,6 +17,7 @@ use Worksome\PhpInsightsApp\GitHubContext;
 use Worksome\PhpInsightsApp\GitHubReviewFormatter;
 use Worksome\PhpInsightsApp\Review;
 use function Clue\StreamFilter\fun;
+use function GuzzleHttp\Psr7\str;
 
 class CreateReview implements Action
 {
@@ -42,10 +43,6 @@ class CreateReview implements Action
 
         // Create a draft pull request
         $reviewId = $this->createDraftPullRequest();
-
-        if ($reviewId === null) {
-            throw new \Exception("Failed creating Pull Request Review.");
-        }
 
         // Create comments
         $comments = $this->createComments($insightCollection, $reviewId);
@@ -203,9 +200,35 @@ class CreateReview implements Action
         );
 
         if ($reviewId == null) {
-            echo sprintf("Failed creating pull request review. [%s]\n", json_encode($errors));
+            echo "Failed creating pull request review, trying to get current draft pull request. [%s]\n", json_encode($errors);
+            return $this->getCurrentDraftPullRequest();
         }
-
         return $reviewId;
+    }
+
+    private function getCurrentDraftPullRequest(): string
+    {
+        ['data' => $data] = $this->client->graphql()->execute(
+            /** @lang GraphQL */'
+            query($owner: String! $repository: String! $pullRequestNumber: Int!){
+              repository(owner: $owner, name: $repository) {
+                pullRequest(number: $pullRequestNumber) {
+                  reviews(first: 1, states: PENDING) {
+                    nodes {
+                      id
+                    }
+                  }
+                }
+              }
+            }',
+            [
+                'owner' => $this->githubContext->getRepositoryOwnerLogin(),
+                'repository' => $this->githubContext->getRepositoryName(),
+                'pullRequestNumber' => $this->githubContext->getPullRequestNumber(),
+            ]
+        );
+
+        var_dump($data);
+        return $data['repository']['pullRequest']['reviews']['nodes'][0]['id'];
     }
 }
