@@ -184,7 +184,7 @@ class CreateReview implements Action
 
     public function createDraftPullRequest(): string
     {
-        ['data' => ['addPullRequestReview' => ['pullRequestReview' => ['id' => $reviewId] ] ] ] = $this->client->graphql()->execute(
+        ['data' => ['addPullRequestReview' => ['pullRequestReview' => ['id' => $reviewId] ] ], 'errors' => $errors ] = $this->client->graphql()->execute(
         /** @lang GraphQL */ '
             mutation($prId: String!) {
               addPullRequestReview(
@@ -201,6 +201,10 @@ class CreateReview implements Action
                 'prId' => $this->githubContext->getPullRequestNodeId(),
             ]
         );
+
+        if ($reviewId === null) {
+            throw new \Exception(sprintf("Failed creating pull request review. [%s]", json_encode($errors)));
+        }
 
         return $reviewId;
     }
