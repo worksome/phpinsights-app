@@ -199,8 +199,11 @@ class CreateReview implements Action
             ]
         );
 
-        if ($reviewId == null) {
-            echo "Failed creating pull request review, trying to get current draft pull request. [%s]\n", json_encode($errors);
+        if ($reviewId === null) {
+            echo printf(
+                "Failed creating pull request review, trying to get current draft pull request. [%s]\n",
+                json_encode($errors)
+            );
             return $this->getCurrentDraftPullRequest();
         }
         return $reviewId;
@@ -208,7 +211,7 @@ class CreateReview implements Action
 
     private function getCurrentDraftPullRequest(): string
     {
-        ['data' => ['repository' => ['pullRequest' => ['reviews' => ['nodes' => ['id' => $draftPrId ] ] ] ] ] ] = $this->client->graphql()->execute(
+        ['data' => ['repository' => ['pullRequest' => ['reviews' => ['nodes' => ['id' => $draftPrId ] ] ] ] ], 'errors' => $errors ] = $this->client->graphql()->execute(
             /** @lang GraphQL */'
             query($owner: String! $repository: String! $pullRequestNumber: Int!){
               repository(owner: $owner, name: $repository) {
@@ -227,6 +230,10 @@ class CreateReview implements Action
                 'pullRequestNumber' => $this->githubContext->getPullRequestNumber(),
             ]
         );
+
+        if ($draftPrId === null) {
+            throw new \Exception(sprintf("No current draft pull request open. [%s]", json_encode($errors)));
+        }
 
         return $draftPrId;
     }
