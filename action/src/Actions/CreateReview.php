@@ -202,7 +202,7 @@ class CreateReview implements Action
             ]
         );
 
-        if (isset($errors) && !empty($errors)) {
+        if ($reviewId == null) {
             echo sprintf("Failed creating pull request review. [%s]\n", json_encode($errors));
         }
 
