@@ -25,6 +25,7 @@ class CreateReview implements Action
     private GitHubContext $githubContext;
     private GitHubReviewFormatter $formatter;
     private Configuration $configuration;
+    private const MAX_ISSUES = 100;
 
     public function __construct(GitHubContext $context, GitHubReviewFormatter $formatter, Configuration $configuration)
     {
@@ -51,7 +52,7 @@ class CreateReview implements Action
         $this->submitDraftPullRequest($insightCollection, $comments, $reviewId);
     }
 
-    private static function getDescription(Results $results, string $reviewStatus): string
+    private static function getDescription(Results $results, string $reviewStatus, int $issues): string
     {
         $table = sprintf(
             "| Code | Complexity | Architecture | Style |\n|:-:|:-:|:-:|:-:|\n|%s%%|%s%%|%s%%|%s%%|",
@@ -60,15 +61,21 @@ class CreateReview implements Action
             $results->getStructure(),
             $results->getStyle(),
         );
+
+        $prepend = "Found {$issues} number of issues in the code.\n";
+        if ($issues > self::MAX_ISSUES) {
+            $prepend .= sprintf("Too many issues, limiting to only show the first %d.\n", self::MAX_ISSUES);
+        }
+
         if ($reviewStatus === Review::APPROVE) {
-            return "PHP Insights found nothing wrong, your code is near perfect!\n{$table}";
+            return "{$prepend}PHP Insights found nothing wrong, your code is near perfect!\n{$table}";
         }
 
         if ($reviewStatus === Review::COMMENT) {
-            return "PHP Insights has some concerns, please look into it.\n{$table}";
+            return "{$prepend}PHP Insights has some concerns, please look into it.\n{$table}";
         }
 
-        return "PHP Insights is not happy, please look into the comments, so we can be friends again.\n{$table}";
+        return "{$prepend}PHP Insights is not happy, please look into the comments, so we can be friends again.\n{$table}";
     }
 
     private function getReviewStatus(Results $result, bool $hasComments): string
@@ -111,7 +118,7 @@ class CreateReview implements Action
             }',
             [
                 'reviewId' => $reviewId,
-                'body' => CreateReview::getDescription($results, $reviewStatus),
+                'body' => CreateReview::getDescription($results, $reviewStatus, count($insightCollection->all())),
                 'event' => $reviewStatus
             ]
         );
@@ -135,6 +142,8 @@ class CreateReview implements Action
                 $this->formatter->getPathResolver()
             ))
             )
+            // Take the first 100 issues, to limit how much data we send.
+            ->take(self::MAX_ISSUES)
             // Chunk by 10, so we create 10 comments per request.
             ->chunk(10)
             // Map each chunk to a mutation.
