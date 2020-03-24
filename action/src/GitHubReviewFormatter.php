@@ -38,8 +38,8 @@ class GitHubReviewFormatter implements Formatter
     public function format(InsightCollection $insightCollection, string $dir, array $metrics): void
     {
         // As PHP Insights changes the error handle, we have to restore them, so we can see the errors again.
-        restore_error_handler();
-        restore_exception_handler();
+        set_error_handler(null);
+        set_exception_handler( null);
 
         collect([
             new CreateReview($this->githubContext, $this, $this->configuration),
