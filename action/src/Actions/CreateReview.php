@@ -62,9 +62,9 @@ class CreateReview implements Action
             $results->getStyle(),
         );
 
-        $prepend = "Found {$issues} number of issues in the code.\n";
+        $prepend = "Found {$issues}  issues in the code.\n";
         if ($issues > self::MAX_ISSUES) {
-            $prepend .= sprintf("Too many issues, limiting to only show the first %d.\n", self::MAX_ISSUES);
+            $prepend .= sprintf("Too many issues, limiting to only show the first %d.\n\n", self::MAX_ISSUES);
         }
 
         if ($reviewStatus === Review::APPROVE) {
