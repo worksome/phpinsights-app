@@ -211,7 +211,7 @@ class CreateReview implements Action
 
     private function getCurrentDraftPullRequest(): string
     {
-        ['data' => ['repository' => ['pullRequest' => ['reviews' => ['nodes' => ['id' => $draftPrId ] ] ] ] ], 'errors' => $errors ] = $this->client->graphql()->execute(
+        ['data' => ['repository' => ['pullRequest' => ['reviews' => ['nodes' => [ [ 'id' => $draftPrId ] ] ] ] ] ], 'errors' => $errors ] = $this->client->graphql()->execute(
             /** @lang GraphQL */'
             query($owner: String! $repository: String! $pullRequestNumber: Int!){
               repository(owner: $owner, name: $repository) {
