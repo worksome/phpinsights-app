@@ -202,9 +202,8 @@ class CreateReview implements Action
             ]
         );
 
-        if ($reviewId === null) {
-            var_dump($errors);
-            throw new \Exception(sprintf("Failed creating pull request review. [%s]", json_encode($errors)));
+        if (isset($errors) && !empty($errors)) {
+            echo sprintf("Failed creating pull request review. [%s]\n", json_encode($errors));
         }
 
         return $reviewId;
