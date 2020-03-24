@@ -27,6 +27,9 @@ $container = Container::make();
 
 $workDir = sprintf("%s/%s", $_SERVER['argv'][1], GitHubContext::getInput('workingDir'));
 $configPath = GitHubContext::getInput('config_path') ?? ($workDir . DIRECTORY_SEPARATOR . '/phpinsights.php');
+
+echo "Getting config file from $configPath\n";
+
 $configuration = ConfigResolver::resolve(
     file_exists($configPath) ? require_once $configPath : [],
     new ArrayInput(
