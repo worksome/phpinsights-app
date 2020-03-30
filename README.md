@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Static analysis
     steps:
-      # You must check out upir repository, so we can analyse it
+      # You must check out your repository, so we can analyse it
       - name: Checkout
         uses: actions/checkout@v2
       - name: PHP Insights App
@@ -34,8 +34,11 @@ jobs:
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           workingDir: '.'
+          memory_limit: '1024M'
 ```
 
-The action has the following two parameters:
+The action has the following parameters:
 - `repo_token`: The GitHub API token, which is used to generate the review. Keeping it as `${{ secrets.GITHUB_TOKEN }}` will make it use the token from the GitHub action.
 - `workingDir`: This set's the directory which we will run the tool on. This is useful if you have a repository with multiple projects in it.
+- `config_path`: (optional) Defines the path to where you php insights config file is, if it's not located in the default location.
+- `memory_limit`: (optional) Set's the PHP limit, if more than the default memory is needed to run php insights on your code.
