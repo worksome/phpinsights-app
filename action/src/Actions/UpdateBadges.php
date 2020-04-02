@@ -8,7 +8,7 @@ use NunoMaduro\PhpInsights\Domain\Configuration;
 use NunoMaduro\PhpInsights\Domain\Insights\InsightCollection;
 use Worksome\PhpInsightsApp\Badges\Client;
 use Worksome\PhpInsightsApp\Badges\Client as BadgesClient;
-use Worksome\PhpInsightsApp\GitHubContext;
+use Worksome\PhpInsightsApp\GitHub\GitHubContext;
 
 class UpdateBadges implements Action
 {
@@ -23,7 +23,7 @@ class UpdateBadges implements Action
      */
     public function __construct(GitHubContext $context, Configuration $configuration)
     {
-        $this->client = new BadgesClient($context::getGitHubToken());
+        $this->client = new BadgesClient($context->getGitHubToken());
         $this->context = $context;
         $this->configuration = $configuration;
     }
@@ -33,11 +33,11 @@ class UpdateBadges implements Action
         $results = $insightCollection->results();
 
         $this->client->updateBadges(
-            $this->context->getRepositoryOwnerLogin(),
-            $this->context->getRepositoryName(),
+            $this->context->getEvent()->getRepositoryOwnerLogin(),
+            $this->context->getEvent()->getRepositoryName(),
             $this->getBranch(),
             [
-                "summary" => [
+                'summary' => [
                     'code' => $results->getCodeQuality(),
                     'architecture' => $results->getStructure(),
                     'complexity' => $results->getComplexity(),
@@ -55,6 +55,6 @@ class UpdateBadges implements Action
 
     private function getBranch(): string
     {
-        return $this->context::getHeadReference() ?? str_replace('refs/heads/', '', $this->context::getReference());
+        return $this->context->getHeadReference() ?? str_replace('refs/heads/', '', $this->context->getReference());
     }
 }

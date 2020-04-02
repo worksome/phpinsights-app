@@ -21,6 +21,9 @@ class Client
         ]);
     }
 
+    /**
+     * @param array<string, array<string, int>> $payload
+     */
     public function updateBadges(string $login, string $repository, string $branch, array $payload): void
     {
         $this->client->post("/{$login}/{$repository}/{$branch}", [

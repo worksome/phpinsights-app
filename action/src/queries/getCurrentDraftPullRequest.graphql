@@ -1,0 +1,11 @@
+query($owner: String! $repository: String! $pullRequestNumber: Int!){
+    repository(owner: $owner, name: $repository) {
+        pullRequest(number: $pullRequestNumber) {
+            reviews(first: 1, states: PENDING) {
+                nodes {
+                    id
+                }
+            }
+        }
+    }
+}

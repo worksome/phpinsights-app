@@ -1,0 +1,13 @@
+mutation($reviewId: String! $body: String! $event: PullRequestReviewEvent!) {
+    submitPullRequestReview(
+        input: {
+            pullRequestReviewId: $reviewId
+            body: $body
+            event: $event
+        }
+    ) {
+        pullRequestReview {
+            id
+        }
+    }
+}

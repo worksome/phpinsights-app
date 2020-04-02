@@ -12,13 +12,12 @@ use Worksome\PhpInsightsApp\Actions\Action;
 use Worksome\PhpInsightsApp\Actions\CreateGitHubActionOutput;
 use Worksome\PhpInsightsApp\Actions\CreateReview;
 use Worksome\PhpInsightsApp\Actions\UpdateBadges;
+use Worksome\PhpInsightsApp\GitHub\GitHubContext;
 use Worksome\PhpInsightsApp\Resolvers\PathResolver;
 
 class GitHubReviewFormatter implements Formatter
 {
     private string $baseDir;
-
-    public array $comments;
 
     private GitHubContext $githubContext;
 
@@ -28,7 +27,7 @@ class GitHubReviewFormatter implements Formatter
     {
         $this->configuration = $configuration;
         $this->githubContext = $gitHubContext;
-        $this->baseDir = getcwd() ?? $gitHubContext::getWorkSpaceDirectory();
+        $this->baseDir = $gitHubContext->getWorkSpaceDirectory();
     }
 
     /**
@@ -40,13 +39,13 @@ class GitHubReviewFormatter implements Formatter
     {
         // As PHP Insights changes the error handle, we have to restore them, so we can see the errors again.
         set_error_handler(null);
-        set_exception_handler( null);
+        set_exception_handler(null);
 
         collect([
             new CreateReview($this->githubContext, $this, $this->configuration),
             new UpdateBadges($this->githubContext, $this->configuration),
-            new CreateGitHubActionOutput($this->githubContext, $dir, $metrics),
-        ])->each(static function (Action $action) use ($insightCollection) {
+            new CreateGitHubActionOutput($dir, $metrics),
+        ])->each(static function (Action $action) use ($insightCollection): void {
             try {
                 $action->handle($insightCollection);
             } catch (Exception $exception) {

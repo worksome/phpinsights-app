@@ -2,14 +2,20 @@
     "name": "worksome/phpinsights_app",
     "description": "PHP Insights App",
     "type": "project",
+    "license": "MIT",
     "require": {
         "nunomaduro/phpinsights": "dev-master@dev",
         "guzzlehttp/guzzle": "^6.5",
-        "symfony/var-dumper": "^4.0",
         "ext-json": "*",
-        "knplabs/github-api": "^2.13@dev",
+        "ext-ctype": "*",
+        "ext-mbstring": "*",
+        "knplabs/github-api": "^2.13",
         "php-http/guzzle6-adapter": "^1.1",
-        "illuminate/support": "^6.16"
+        "illuminate/support": "^6.16",
+        "symfony/console": "^5.0",
+        "symfony/dependency-injection": "^5.0",
+        "symfony/config": "^5.0",
+        "vlucas/phpdotenv": "^4.0"
     },
     "authors": [
         {
@@ -17,13 +23,24 @@
             "email": "oliver@worksome.com"
         }
     ],
+    "replace": {
+        "symfony/polyfill-ctype": "*",
+        "symfony/polyfill-php70": "*",
+        "symfony/polyfill-php72": "*",
+        "symfony/polyfill-php73": "*",
+        "symfony/polyfill-mbstring": "*",
+        "symfony/polyfill-intl-grapheme": "*",
+        "symfony/polyfill-intl-idn": "*",
+        "symfony/polyfill-intl-normalizer": "*"
+    },
     "autoload": {
         "psr-4": {
             "Worksome\\PhpInsightsApp\\": "src"
         }
     },
-    "bin": ["bin/phpinsights-app.php"],
+    "bin": ["bin/phpinsights-app"],
     "require-dev": {
-        "humbug/box": "^3.8"
-    }
+        "symfony/var-dumper": "^4.0"
+    },
+    "minimum-stability": "dev"
 }

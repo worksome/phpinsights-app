@@ -8,7 +8,7 @@ on:
       - 'badge/**'
 
 jobs:
-  deploy:
+  deploy_to_cloudflare:
     runs-on: ubuntu-latest
     name: Deploy
     steps:

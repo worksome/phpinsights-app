@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use PHP_CodeSniffer\Standards\Generic\Sniffs\Files\LineLengthSniff;
+use PHP_CodeSniffer\Standards\Generic\Sniffs\PHP\NoSilencedErrorsSniff;
 
 return [
 
@@ -64,12 +65,19 @@ return [
 
     'remove' => [
         \NunoMaduro\PhpInsights\Domain\Insights\ForbiddenNormalClasses::class,
+        \SlevomatCodingStandard\Sniffs\TypeHints\DisallowArrayTypeHintSyntaxSniff::class,
+        \PHP_CodeSniffer\Standards\Generic\Sniffs\Formatting\SpaceAfterNotSniff::class,
     ],
 
     'config' => [
         LineLengthSniff::class => [
             'absoluteLineLimit' => 120,
             'lineLimit' => 120,
+        ],
+        NoSilencedErrorsSniff::class => [
+            'exclude' => [
+                'src/Kernel.php',
+            ],
         ],
     ],
 

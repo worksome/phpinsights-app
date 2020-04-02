@@ -1,0 +1,50 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+/*
+|--------------------------------------------------------------------------
+| Register The Auto Loader
+|--------------------------------------------------------------------------
+|
+*/
+
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/squizlabs/php_codesniffer/autoload.php';
+
+$container = new \Worksome\PhpInsightsApp\Application;
+
+/*
+|--------------------------------------------------------------------------
+| Run The Application
+|--------------------------------------------------------------------------
+|
+*/
+
+/** @var \Worksome\PhpInsightsApp\Kernel $kernel */
+$kernel = $container->get(\Worksome\PhpInsightsApp\Kernel::class);
+
+$status = $kernel->handle(
+    new Symfony\Component\Console\Input\ArgvInput,
+    new Symfony\Component\Console\Output\ConsoleOutput
+);
+
+/*
+|--------------------------------------------------------------------------
+| Shutdown The Application
+|--------------------------------------------------------------------------
+|
+*/
+
+$kernel->terminate();
+
+exit($status);
+
+//dump(
+//GitHubContext::getRuntimeUrl(),
+//GitHubContext::getWorkFlowRunId(),
+//str_split(GitHubContext::getRuntimeToken(), 1500)
+//);
+//$token = GitHubContext::getGitHubToken();
+//dump(str_split($token, (int) round(strlen($token) / 2)));

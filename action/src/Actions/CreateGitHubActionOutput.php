@@ -8,12 +8,9 @@ use NunoMaduro\PhpInsights\Application\Console\Formatters\GithubAction;
 use NunoMaduro\PhpInsights\Domain\Insights\InsightCollection;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
-use Worksome\PhpInsightsApp\GitHubContext;
 
 class CreateGitHubActionOutput implements Action
 {
-    private GitHubContext $gitHubContext;
-
     private string $dir;
 
     /** @var array<int, string> */
@@ -22,9 +19,8 @@ class CreateGitHubActionOutput implements Action
     /**
      * @param array<int, string> $metrics
      */
-    public function __construct(GitHubContext $gitHubContext, string $dir, array $metrics)
+    public function __construct(string $dir, array $metrics)
     {
-        $this->gitHubContext = $gitHubContext;
         $this->dir = $dir;
         $this->metrics = $metrics;
     }

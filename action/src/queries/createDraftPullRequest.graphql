@@ -1,0 +1,11 @@
+mutation($prId: String!) {
+    addPullRequestReview(
+        input: {
+            pullRequestId: $prId
+        }
+    ) {
+        pullRequestReview {
+            id
+        }
+    }
+}
