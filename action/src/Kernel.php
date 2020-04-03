@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Worksome\PhpInsightsApp;
 
+use PHP_CodeSniffer\Util\Tokens;
 use Symfony\Component\Console\CommandLoader\ContainerCommandLoader;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -24,6 +25,8 @@ class Kernel
     public function bootstrap(): void
     {
         @\NunoMaduro\PhpInsights\Domain\Kernel::bootstrap();
+        require_once __DIR__ . '/../vendor/squizlabs/php_codesniffer/src/Util/Tokens.php';
+
         $this->gitHubContext->boot();
     }
 

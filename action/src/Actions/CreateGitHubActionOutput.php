@@ -11,17 +11,14 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 
 class CreateGitHubActionOutput implements Action
 {
-    private string $dir;
-
     /** @var array<int, string> */
     private array $metrics;
 
     /**
      * @param array<int, string> $metrics
      */
-    public function __construct(string $dir, array $metrics)
+    public function __construct(array $metrics)
     {
-        $this->dir = $dir;
         $this->metrics = $metrics;
     }
 
@@ -34,7 +31,6 @@ class CreateGitHubActionOutput implements Action
 
         $actionFormatter->format(
             $insightCollection,
-            $this->dir,
             $this->metrics
         );
     }

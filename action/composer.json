@@ -42,5 +42,5 @@
     "require-dev": {
         "symfony/var-dumper": "^4.0"
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "stable"
 }

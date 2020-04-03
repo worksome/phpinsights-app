@@ -38,7 +38,7 @@ class PhpInsightContainer
             require $configPath,
             new ArrayInput(
                 [
-                    'directory' => $workDir,
+                    'paths' => [$workDir],
                 ],
                 AnalyseDefinition::get()
             )

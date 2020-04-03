@@ -1,3 +1,5 @@
 composer.lock
 vendor
 phpinsights-app.phar
+.env
+box.phar

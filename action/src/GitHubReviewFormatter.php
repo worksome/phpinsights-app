@@ -35,7 +35,7 @@ class GitHubReviewFormatter implements Formatter
      *
      * @param array<int, string> $metrics
      */
-    public function format(InsightCollection $insightCollection, string $dir, array $metrics): void
+    public function format(InsightCollection $insightCollection, array $metrics): void
     {
         // As PHP Insights changes the error handle, we have to restore them, so we can see the errors again.
         set_error_handler(null);
@@ -44,7 +44,7 @@ class GitHubReviewFormatter implements Formatter
         collect([
             new CreateReview($this->githubContext, $this, $this->configuration),
             new UpdateBadges($this->githubContext, $this->configuration),
-            new CreateGitHubActionOutput($dir, $metrics),
+            new CreateGitHubActionOutput($metrics),
         ])->each(static function (Action $action) use ($insightCollection): void {
             try {
                 $action->handle($insightCollection);

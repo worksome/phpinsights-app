@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Worksome\PhpInsightsApp\GitHub;
 
-use Dotenv\Repository\RepositoryInterface as EnvRepositoryInterface;
+use Worksome\PhpInsightsApp\EnvRepository;
 use Github\Client;
 use Symfony\Component\Process\Process;
 use Worksome\PhpInsightsApp\ChangedFilesRepository;
@@ -14,11 +14,11 @@ class GitHubContext
     public const GITHUB_EVENT_PATH = 'GITHUB_EVENT_PATH';
     public const GITHUB_SHA = 'GITHUB_SHA';
 
-    private EnvRepositoryInterface $repository;
+    private EnvRepository $repository;
     private GitHubEvent $event;
     private ChangedFilesRepository $changedFiles;
 
-    public function __construct(EnvRepositoryInterface $envRepository)
+    public function __construct(EnvRepository $envRepository)
     {
         $this->repository = $envRepository;
     }
