@@ -9,6 +9,7 @@ Running PHP Insights in the best way possible!
 This tool will run PHP Insights for you and provide you with GitHub reviews, badges and more!  
 To use it add the example workflow file to your GitHub repository, and the GitHub Action will run automatically 🎩
 
+![Review Example Comment](https://raw.githubusercontent.com/worksome/phpinsights-app/master/art/review-example-comment.png)
 ![Review Example](https://raw.githubusercontent.com/worksome/phpinsights-app/master/art/review-example.png)
 
 Adding the following workflow file, will make phpinsights run on pull request, where it will create a review with the errors.  
