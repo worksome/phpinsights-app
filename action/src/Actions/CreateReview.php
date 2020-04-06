@@ -215,9 +215,6 @@ class CreateReview implements Action
         );
 
         $prepend = "Found {$issues}  issues in the code.\n";
-        if ($issues > self::MAX_ISSUES) {
-            $prepend .= sprintf("Too many issues, limiting to only show the first %d.\n\n", self::MAX_ISSUES);
-        }
 
         if ($reviewStatus === Review::APPROVE) {
             return "{$prepend}PHP Insights found nothing wrong, your code is near perfect!\n{$table}";
