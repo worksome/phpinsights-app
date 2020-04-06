@@ -95,7 +95,7 @@ class CreateReview implements Action
                 ))
             )
             ->filter(static fn (Comment $comment) => $changedFiles->has($comment->getPath()))
-            ->each(static fn (Comment $comment) => var_dump("Adding pull request for {$comment->getPath()}"))
+            ->each(static fn (Comment $comment) => var_dump("Adding comment for {$comment->getPath()}"))
             // Take the first 100 issues, to limit how much data we send.
             ->take(self::MAX_ISSUES)
             // Chunk by 10, so we create 10 comments per request.
@@ -192,7 +192,7 @@ class CreateReview implements Action
                 'repository' => $this->githubContext->getEvent()->getRepositoryName(),
                 'pullRequestNumber' => $this->githubContext->getEvent()->getPullRequestNumber(),
             ]
-        );
+        ) + ['errors' => null];
 
         if ($draftPrId === null) {
             throw new RuntimeException(sprintf(

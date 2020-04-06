@@ -17,7 +17,6 @@ class Comment
     {
         $this->line = $detail->hasLine() ? $detail->getLine() : 1;
         $this->body = self::formatBody($detail, $title);
-        echo "original file path: {$detail->getFile()}\n";
         $this->path = $pathResolver->getRelativePath($detail->getFile());
     }
 

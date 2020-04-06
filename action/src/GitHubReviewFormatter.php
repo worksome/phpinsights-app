@@ -8,6 +8,7 @@ use Exception;
 use NunoMaduro\PhpInsights\Application\Console\Contracts\Formatter;
 use NunoMaduro\PhpInsights\Domain\Configuration;
 use NunoMaduro\PhpInsights\Domain\Insights\InsightCollection;
+use RuntimeException;
 use Worksome\PhpInsightsApp\Actions\Action;
 use Worksome\PhpInsightsApp\Actions\CreateGitHubActionOutput;
 use Worksome\PhpInsightsApp\Actions\CreateReview;
@@ -49,10 +50,14 @@ class GitHubReviewFormatter implements Formatter
             try {
                 $action->handle($insightCollection);
             } catch (Exception $exception) {
-                echo sprintf(
-                    "Failed on action [%s] with message [%s]\n",
-                    class_basename($action),
-                    $exception->getMessage()
+                throw new RuntimeException(
+                    sprintf(
+                        "Failed on action [%s] with message [%s]\n",
+                        class_basename($action),
+                        $exception->getMessage()
+                    ),
+                    $exception->getCode(),
+                    $exception
                 );
             }
         });
