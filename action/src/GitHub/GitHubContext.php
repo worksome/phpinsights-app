@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Worksome\PhpInsightsApp\GitHub;
 
-use Worksome\PhpInsightsApp\EnvRepository;
 use Github\Client;
 use Symfony\Component\Process\Process;
 use Worksome\PhpInsightsApp\ChangedFilesRepository;
+use Worksome\PhpInsightsApp\EnvRepository;
 
 class GitHubContext
 {

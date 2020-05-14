@@ -29,7 +29,6 @@ class EnvRepositoryFactory
             $envData = [];
         }
 
-
         return new EnvRepository($repository, $envData);
     }
 }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Worksome\PhpInsightsApp;
 
-use PHP_CodeSniffer\Util\Tokens;
 use Symfony\Component\Console\CommandLoader\ContainerCommandLoader;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

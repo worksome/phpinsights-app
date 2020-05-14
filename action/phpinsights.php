@@ -61,6 +61,9 @@ return [
         //  ExampleMetric::class => [
         //      ExampleInsight::class,
         //  ]
+        \NunoMaduro\PhpInsights\Domain\Metrics\Code\Code::class => [
+            \ObjectCalisthenics\Sniffs\ControlStructures\NoElseSniff::class,
+        ],
     ],
 
     'remove' => [
