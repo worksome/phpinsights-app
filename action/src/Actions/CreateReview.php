@@ -29,7 +29,7 @@ class CreateReview implements Action
 
     public function __construct(GitHubContext $context, GitHubReviewFormatter $formatter, Configuration $configuration)
     {
-        $this->client = $context->getGitHubClient('comfort-fade-preview');
+        $this->client = $context->getGitHubClient("comfort-fade-preview");
         $this->githubContext = $context;
         $this->formatter = $formatter;
         $this->configuration = $configuration;
@@ -223,7 +223,8 @@ class CreateReview implements Action
         if ($reviewStatus === Review::COMMENT) {
             return "{$prepend}PHP Insights has some concerns, please look into it.\n{$table}";
         }
-
-        return "{$prepend}PHP Insights is not happy, please look into the comments, so we can be friends again.\n{$table}";
+        else {
+            return "{$prepend}PHP Insights is not happy, please look into the comments, so we can be friends again.\n{$table}";
+        }
     }
 }
