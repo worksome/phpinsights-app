@@ -6,8 +6,6 @@ on:
       - master
     paths:
       - 'action/**'
-  schedule:
-    - cron: '0 0 * * *'
 
 jobs:
   build_and_publish_to_docker:
